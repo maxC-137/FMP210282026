@@ -1,0 +1,210 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+package com.mycompany.studentgraderanksystem;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Scanner;
+
+class Student {
+
+    private int id;
+    private String name;
+    private int grade;
+
+    public Student(int id, String name, int grade) {
+        this.id = id;
+        this.name = name;
+        this.grade = grade;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getGrade() {
+        return grade;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + " | Name: " + name + " | Grade: " + grade;
+    }
+}
+
+public class StudentGradeRankSystem {
+
+    static Scanner scanner = new Scanner(System.in);
+    static ArrayList<Student> students = new ArrayList<>();
+
+    public static void main(String[] args) {
+
+        int choice;
+
+        do {
+            System.out.println("\n===== STUDENT GRADE AND RANKING SYSTEM =====");
+            System.out.println("1. Add");
+            System.out.println("2. List");
+            System.out.println("3. Find");
+            System.out.println("4. Rank");
+            System.out.println("5. Remove Failing");
+            System.out.println("0. Exit");
+            System.out.print("Enter choice: ");
+
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    addStudent();
+                    break;
+                case 2:
+                    listStudents();
+                    break;
+                case 3:
+                    findStudent();
+                    break;
+                case 4:
+                    rankStudents();
+                    break;
+                case 5:
+                    removeFailing();
+                    break;
+                case 0:
+                    System.out.println("Program terminated.");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+
+        } while (choice != 0);
+
+        scanner.close();
+    }
+
+    public static void addStudent() {
+
+        System.out.print("Enter Student ID: ");
+        int id = scanner.nextInt();
+
+        for (Student student : students) {
+            if (student.getId() == id) {
+                System.out.println("Rejected; count " + students.size());
+                return;
+            }
+        }
+
+        System.out.print("Enter Student Name: ");
+        String name = scanner.next();
+
+        System.out.print("Enter Grade (0-100): ");
+
+        if (!scanner.hasNextInt()) {
+            System.out.println("Invalid grade; count remains " + students.size());
+            scanner.next();
+            return;
+        }
+
+        int grade = scanner.nextInt();
+
+        if (grade < 0 || grade > 100) {
+            System.out.println("Rejected; grade out of range");
+            return;
+        }
+
+        students.add(new Student(id, name, grade));
+        System.out.println("Added; count " + students.size());
+    }
+
+    public static void listStudents() {
+
+        if (students.isEmpty()) {
+            System.out.println("No students registered.");
+            return;
+        }
+
+        System.out.println("\nRegistration Order:");
+
+        for (Student student : students) {
+            System.out.println(student);
+        }
+    }
+
+   public static void findStudent() {
+
+    System.out.print("Enter Student ID to find: ");
+    int searchId = scanner.nextInt();
+
+    for (Student student : students) {
+        if (student.getId() == searchId) {
+            System.out.println(student.getName() + ", " + student.getGrade());
+            return;
+        }
+    }
+
+    System.out.println("Not found");
+}
+
+    public static void rankStudents() {
+
+        if (students.isEmpty()) {
+            System.out.println("No students to rank.");
+            return;
+        }
+
+        ArrayList<Student> rankedStudents = new ArrayList<>(students);
+
+        Collections.sort(rankedStudents, new Comparator<Student>() {
+            @Override
+            public int compare(Student s1, Student s2) {
+
+                if (s1.getGrade() != s2.getGrade()) {
+                    return s2.getGrade() - s1.getGrade();
+                }
+
+                return s1.getId() - s2.getId();
+            }
+        });
+
+       System.out.println("\nRankings:");
+
+for (int i = 0; i < rankedStudents.size(); i++) {
+
+    System.out.print(
+            rankedStudents.get(i).getName() + " "
+            + rankedStudents.get(i).getGrade());
+
+    if (i < rankedStudents.size() - 1) {
+        System.out.print(", ");
+    }
+}
+
+System.out.println();
+    }
+
+   public static void removeFailing() {
+
+    Iterator<Student> iterator = students.iterator();
+
+    while (iterator.hasNext()) {
+
+        Student student = iterator.next();
+
+        if (student.getGrade() < 75) {
+            String name = student.getName();
+            iterator.remove();
+
+            System.out.println(name + " removed; count " + students.size());
+            return;
+        }
+    }
+
+    System.out.println("No failing students found.");
+}
+    }
